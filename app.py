@@ -5,10 +5,11 @@ from groq import Groq
 st.title("📄 AI Document Q&A")
 st.write("Upload a PDF and ask it anything")
 
-groq_key = st.text_input("Enter your Groq API key", type="password")
+GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
+
 uploaded_file = st.file_uploader("Upload PDF", type="pdf")
 
-if uploaded_file and groq_key:
+if uploaded_file:
     pdf_reader = pypdf.PdfReader(uploaded_file)
     text = ""
     for page in pdf_reader.pages:
@@ -19,8 +20,7 @@ if uploaded_file and groq_key:
     question = st.text_input("Ask a question about your document")
     
     if question:
-        client = Groq(api_key=groq_key)
-        
+        client = Groq(api_key=GROQ_API_KEY)
         response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=[
@@ -30,5 +30,4 @@ if uploaded_file and groq_key:
                 }
             ]
         )
-        
         st.write("**Answer:**", response.choices[0].message.content)
